@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Detail</title>
+    <!-- Include any CSS stylesheets or JavaScript files if needed -->
+</head>
+<body>
+    <div class="container">
+        <h1>{{ exam.name }}</h1>
+        <p>{{ exam.description }}</p>
+
+        <h2>Questions:</h2>
+        <ul>
+            {% for question in exam.questions.all %}
+                <li>{{ question.text }}</li>
+            {% endfor %}
+        </ul>
+
+        <p>Duration: {{ exam.duration }} minutes</p>
+        <p>Start Time: {{ exam.start_time }}</p>
+        <p>End Time: {{ exam.end_time }}</p>
+
+        <h2>Instructions:</h2>
+        <p>{{ exam.instructions }}</p>
+
+        <a href="{% url 'take_exam' exam.id %}" class="btn btn-primary">Start Exam</a>
+        <a href="{% url 'exam_list' %}" class="btn btn-secondary">Back to Exam List</a>
+    </div>
+</body>
+</html>

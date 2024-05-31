@@ -1,0 +1,108 @@
+<!-- exams/templates/exams/take_exam.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Take Exam - {{ exam.name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        #timer {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: blue;
+        }
+        .carousel-control-prev,
+        .carousel-control-next {
+            filter: invert(100%);
+        }
+        .carousel-control-prev,
+        .carousel-control-next,
+        .submit-btn {
+            display: inline-block;
+            margin: 10px;
+        }
+        .question-container {
+            text-align: center;
+        }
+        .question-text {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .options {
+            text-align: left;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">{{ exam.name }}</h1>
+        <div id="timer">60:00</div>
+        <form method="post" id="exam-form" action="{% url 'submit_exam' exam.id %}">
+            {% csrf_token %}
+            <div id="questionCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+                <div class="carousel-inner">
+                    {% for question in questions %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="question-container">
+                                <p class="question-text">Question {{ forloop.counter }}: {{ question.text }}</p>
+                                <div class="options">
+                                    <input type="radio" name="answer_{{ question.id }}" value="{{ question.option1 }}" required> {{ question.option1 }}<br>
+                                    <input type="radio" name="answer_{{ question.id }}" value="{{ question.option2 }}" required> {{ question.option2 }}<br>
+                                    <input type="radio" name="answer_{{ question.id }}" value="{{ question.option3 }}" required> {{ question.option3 }}<br>
+                                    <input type="radio" name="answer_{{ question.id }}" value="{{ question.option4 }}" required> {{ question.option4 }}<br>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="text-center">
+                <a class="carousel-control-prev btn btn-primary" href="#questionCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next btn btn-primary" href="#questionCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <button type="submit" class="btn btn-success submit-btn">Submit Exam</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        var timeLeft = 60 * 60; // 60 minutes in seconds
+        var timerElement = document.getElementById('timer');
+        var examForm = document.getElementById('exam-form');
+
+        function updateTimer() {
+            var minutes = Math.floor(timeLeft / 60);
+            var seconds = timeLeft % 60;
+
+            if (seconds < 10) {
+                seconds = '0' + seconds;
+            }
+
+            timerElement.textContent = minutes + ':' + seconds;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                examForm.submit(); // Submit the form when the timer finishes
+            }
+
+            timeLeft--;
+        }
+
+        var timerInterval = setInterval(updateTimer, 1000); // Update the timer every second
+    </script>
+</body>
+</html>
